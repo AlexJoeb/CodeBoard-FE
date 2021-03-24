@@ -1,0 +1,17 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="46" height="46" viewBox="0 0 46 46">
+  <g id="cryptography" transform="translate(-1 -1)">
+    <g id="Group_1" data-name="Group 1">
+      <path id="Path_1" data-name="Path 1" d="M37.879,5.879,34,2H28v9l6,6.12V24" fill="none" stroke="#3730a3" stroke-linecap="square" stroke-miterlimit="10" stroke-width="2"/>
+      <circle id="Ellipse_1" data-name="Ellipse 1" cx="3" cy="3" r="3" transform="translate(15 8)" fill="none" stroke="#3730a3" stroke-linecap="square" stroke-miterlimit="10" stroke-width="2"/>
+      <circle id="Ellipse_2" data-name="Ellipse 2" cx="3" cy="3" r="3" transform="translate(27 34)" fill="none" stroke="#3730a3" stroke-linecap="square" stroke-miterlimit="10" stroke-width="2"/>
+      <path id="Path_2" data-name="Path 2" d="M2,25V14L14,2h8" fill="none" stroke="#3730a3" stroke-linecap="square" stroke-miterlimit="10" stroke-width="2"/>
+      <path id="Path_3" data-name="Path 3" d="M15.88,13.12,8,21V31H2" fill="none" stroke="#3730a3" stroke-linecap="square" stroke-miterlimit="10" stroke-width="2"/>
+      <path id="Path_4" data-name="Path 4" d="M26,46h8L46,34V23" fill="none" stroke="#3730a3" stroke-linecap="square" stroke-miterlimit="10" stroke-width="2"/>
+      <path id="Path_5" data-name="Path 5" d="M10.12,42.12,14,46h6V37l-6-6V24" fill="none" stroke="#3730a3" stroke-linecap="square" stroke-miterlimit="10" stroke-width="2"/>
+      <path id="Path_6" data-name="Path 6" d="M32.12,34.88,40,27V17h6" fill="none" stroke="#3730a3" stroke-linecap="square" stroke-miterlimit="10" stroke-width="2"/>
+      <circle id="Ellipse_3" data-name="Ellipse 3" cx="3" cy="3" r="3" transform="translate(21 21)" fill="none" stroke="#3730a3" stroke-linecap="square" stroke-miterlimit="10" stroke-width="2"/>
+      <circle id="Ellipse_4" data-name="Ellipse 4" cx="3" cy="3" r="3" transform="translate(37 5)" fill="none" stroke="#3730a3" stroke-linecap="square" stroke-miterlimit="10" stroke-width="2"/>
+      <circle id="Ellipse_5" data-name="Ellipse 5" cx="3" cy="3" r="3" transform="translate(5 37)" fill="none" stroke="#3730a3" stroke-linecap="square" stroke-miterlimit="10" stroke-width="2"/>
+    </g>
+  </g>
+</svg>
