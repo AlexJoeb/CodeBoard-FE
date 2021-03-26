@@ -1,10 +1,6 @@
 import React, { ReactElement } from 'react'
 
-interface Props {
-  
-}
-
-export default function Stats({}: Props): ReactElement {
+export default function Stats(): ReactElement {
   return (
     <div className='w-full max-w-2xl h-24 rounded bg-white shadow-lg grid grid-cols-3 grid-rows-1'>
       <div className='flex justify-center items-center flex-col '>

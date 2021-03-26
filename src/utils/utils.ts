@@ -1,0 +1,1 @@
+export const parseTime = (time: number): string => new Date(time).toISOString().split("T")[0].replace(/-/g, ".");

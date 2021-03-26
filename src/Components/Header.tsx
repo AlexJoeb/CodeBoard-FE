@@ -6,9 +6,24 @@ import { ReactComponent as Logo } from '../assets/logo.svg';
 
 // TS
 import { ILink } from '../utils/types';
-import { Links } from '../utils/vars';
 
 const Header: FC = (): ReactElement => {
+  const Links: ILink[] = [
+    {
+      path: "/search",
+      title: "Search"
+    },
+    {
+      path: "/",
+      title: "Board",
+      class: "mx-4"
+    },
+    {
+      path: "/login",
+      title: "Login",
+      class: "font-bold"
+    }
+  ];
   return (
     <div className='w-full h-24 flex items-center justify-between'>
       <Logo />
