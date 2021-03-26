@@ -1,61 +1,41 @@
-import { createSlice, PayloadAction } from "@reduxjs/toolkit";
+import { createAction, createSlice, PayloadAction } from "@reduxjs/toolkit";
 import { AppThunk } from "../store";
 import { IComment } from "../../utils/types";
 import { appendComment } from "./postSlice";
 import { v4 as uuidv4 } from 'uuid';
 
+const ACTIONS = {
+	"VOID_ALL": createAction<undefined>('comments/void'),
+	"SET_ALL": createAction<IComment[]>('comments/set'),
+	"ADD": createAction<IComment>('comments/add'),
+	"REMOVE": createAction<number | string>('comments/remove'),
+	"UPDATE": createAction<{ id: number | string, updates: Partial<IComment> }>('comments/update'),
+}
+
+const initialState: IComment[] = [];
 const slice = createSlice({
 	name: "comments",
-	initialState: [] as IComment[],
+	initialState,
 	reducers: {
-		VOID_COMMENTS: state => {
-			return state = [];
-		},
-		SET_COMMENTS: (state, action: PayloadAction<IComment[]>) => {
-			return state = action.payload;
-		},
+		ACTIONS["VOID_ALL"]: state => initialState,
+		SET_COMMENT_LIST: (state, action: PayloadAction<IComment[]>) => action.payload,
 		ADD_COMMENT: (state, action: PayloadAction<IComment>) => {
-			return [...state, action.payload];
+			state.push(action.payload)
 		},
-		REMOVE_COMMENT: (state, action: PayloadAction<number | string>) => {
-			return state.filter(comment => comment.id !== action.payload);
-		},
+		REMOVE_COMMENT: (state, action: PayloadAction<number | string>) => state.filter(c => c.id !== action.payload),
 		UPDATE_COMMENT: (state, action: PayloadAction<{ id: number; updates: Partial<IComment> }>) => {
 			const { id, updates } = action.payload;
-			const oldComment = state.filter(comment => comment.id === id)[0];
-			const newComment = {
-				...oldComment,
-				...updates
-			}
-			return [
-				...state.filter(comment => comment.id !== id),
-				newComment,
-			]
+			return state.map(c => {
+				// Not the item we're looking for. Keep moving.
+				if(c.id !== id) return c;
+				else return {
+					...c,
+					...updates,
+				}
+			})
 		}
 	}
 });
-
-export const { SET_COMMENTS, VOID_COMMENTS, ADD_COMMENT, REMOVE_COMMENT, UPDATE_COMMENT } = slice.actions;
-
-export const voidAllComments = (): AppThunk => dispatch => {
-	dispatch(VOID_COMMENTS());
-};
-
-export const setComments = (comments: IComment[]): AppThunk => dispatch => {
-	dispatch(SET_COMMENTS(comments));
-};
-
-export const addComment = (comment: IComment): AppThunk => dispatch => {
-	dispatch(ADD_COMMENT(comment));
-};
-
-export const removeCommentById = (id: number): AppThunk => dispatch => {
-	dispatch(REMOVE_COMMENT(id));
-};
-
-export const updateComment = (id: number, updates: Partial<IComment>): AppThunk => dispatch => {
-	dispatch(UPDATE_COMMENT({ id, updates }));
-};
 
 export const generateComments = (): AppThunk => (dispatch, getState) => {
 	const { comments: Comments, users: Users, posts: Posts } = getState();

@@ -11,7 +11,7 @@ import { RootState } from "./Redux/store";
 const App: FC = () => {
   const dispatch = useDispatch();
   const state = useSelector((state: RootState) => state);
-  
+
   React.useEffect(() => {
     dispatch(generateUsers());
     dispatch(generatePosts());

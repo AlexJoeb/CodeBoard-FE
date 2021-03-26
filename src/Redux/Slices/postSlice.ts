@@ -3,81 +3,72 @@ import { AppThunk } from "../store";
 import { IPost, ITopic } from "../../utils/types";
 import { v4 as uuidv4 } from 'uuid';
 
-export type IPostState = { [key: string]: IPost };
+const initialState: IPost[] = [];
 const slice = createSlice({
 	name: "posts",
-	initialState: {} as IPostState,
+	initialState,
 	reducers: {
-		VOID_POSTS: state => {
-			state = {};
-		},
-		SET_POSTS: (state, action: PayloadAction<IPostState>) => {
-			state = action.payload;
-		},
+		VOID_POSTS: state => initialState,
+		SET_POSTS_LIST: (state, action: PayloadAction<IPost[]>) => action.payload,
 		ADD_POST: (state, action: PayloadAction<IPost>) => {
-			state[action.payload.id] = action.payload;
+			state.push(action.payload)
 		},
-		REMOVE_POST: (state, action: PayloadAction<string>) => {
-			delete state[action.payload];
-		},
+		REMOVE_POST: (state, action: PayloadAction<number | string>) => state.filter(p => p.id !== action.payload),
 		UPDATE_POST: (state, action: PayloadAction<{ id: number; updates: Partial<IPost> }>) => {
 			const { id, updates } = action.payload;
-			const newPost = {
-				...state[id],
-				...updates
-			}
-			return [
-				...state.filter(post => post.id !== id),
-				newPost,
-			]
+			return state.map(p => {
+				// Not the item we're looking for. Keep moving.
+				if(p.id !== id) return p;
+				else return {
+					...p,
+					...updates,
+				}
+			})
 		},
 		APPEND_COMMENT: (state, action: PayloadAction<{ id: number | string; commentId: number | string }>) => {
-			console.log("------", state.posts)
-			return [];
-			// const id: string | number = action.payload.id;
-			// const commentId: string | number = action.payload.commentId;
-			// const oldPost = state.filter(post => {
-			// 	return post.id === id;
-			// })[0] as IPost;
-			// console.log("Old Post:", oldPost);
-			// if(!oldPost) throw new Error("Comment to be updated not found.");
-			// const newPost = {
-			// 	...oldPost,
-			// 	comments: [...oldPost.comments, commentId]
-			// }
-			// return [
-			// 	...state.filter(post => post.id !== id),
-			// 	newPost,
-			// ]
+			const { id, commentId } = action.payload;
+			return state.map(p => {
+				// Not the item we're looking for. Keep moving.
+				if(p.id !== id) return p;
+				// CommentID already in list.
+				if(p.comments.includes(commentId)) return p;
+				return { 
+					...p,
+					comments: p.comments.concat([commentId]),
+				}
+			});
 		}
 	}
 });
 
-export const { SET_POSTS, VOID_POSTS, ADD_POST, REMOVE_POST, UPDATE_POST, APPEND_COMMENT } = slice.actions;
-
-export const voidAllPosts = (): AppThunk => dispatch => {
-	dispatch(VOID_POSTS());
+const voidAllCommentsAction = () => (createAction<undefined>('comments/void'))();
+export const voidAllComments = (): AppThunk => dispatch => {
+	dispatch(voidAllCommentsAction());
 };
 
-export const setPosts = (posts: IPost[]): AppThunk => dispatch => {
-	dispatch(SET_POSTS(posts));
-};
+// export const voidAllPosts = (): AppThunk => dispatch => {
+// 	dispatch(VOID_POSTS());
+// };
 
-export const addPost = (post: IPost): AppThunk => dispatch => {
-	dispatch(ADD_POST(post));
-};
+// export const setPosts = (posts: IPost[]): AppThunk => dispatch => {
+// 	dispatch(SET_POSTS(posts));
+// };
 
-export const removePostById = (id: number): AppThunk => dispatch => {
-	dispatch(REMOVE_POST(id));
-};
+// export const addPost = (post: IPost): AppThunk => dispatch => {
+// 	dispatch(ADD_POST(post));
+// };
 
-export const updatePost = (id: number, updates: Partial<IPost>): AppThunk => dispatch => {
-	dispatch(UPDATE_POST({ id, updates }));
-};
+// export const removePostById = (id: number): AppThunk => dispatch => {
+// 	dispatch(REMOVE_POST(id));
+// };
 
-export const appendComment = (id: number | string, commentId: number | string): AppThunk => dispatch => {
-	dispatch(APPEND_COMMENT({ id, commentId }));
-};
+// export const updatePost = (id: number, updates: Partial<IPost>): AppThunk => dispatch => {
+// 	dispatch(UPDATE_POST({ id, updates }));
+// };
+
+// export const appendComment = (id: number | string, commentId: number | string): AppThunk => dispatch => {
+// 	dispatch(APPEND_COMMENT({ id, commentId }));
+// };
 
 export const generatePosts = (): AppThunk => (dispatch, getState) => {
 	const { posts: Posts, topics: Topics, users: Users } = getState();

@@ -13,8 +13,11 @@ export const store = configureStore({
 		topics: topicReducer,
 		comments: commentReducer
 	},
-	middleware: [thunk, logger],
+	middleware: [logger],
 });
 
-export type RootState = ReturnType<typeof store.getState>;
+
+// Inferred type: {posts: PostsState, comments: CommentsState, users: UsersState}
+export type AppDispatch = typeof store.dispatch
+export type RootState = ReturnType<AppDispatch>;
 export type AppThunk<ReturnType = void> = ThunkAction<ReturnType, RootState, unknown, Action<string>>;
