@@ -1,34 +1,37 @@
+export type IDType = number | string;
 export interface ITopic {
+  id: IDType;
   title: string;
-  textcolor?: string;
-  bgcolor: string;
+  textColor?: string;
+  bgColor: string;
 }
 
-export enum ERole { 
-  USER="User", ADMIN="Admin"
+export enum ERole {
+  USER = "User",
+  ADMIN = "Admin",
 }
 
 export interface ILink {
   path: string;
   title: string;
   class?: string;
-};
+}
 
 export interface IPost {
-  id: number | string;
-  author: number | string;
+  id: IDType;
+  author: IDType;
   content: string;
   likes: number;
-  comments: (number | string)[];
+  comments: IDType[];
   topics: ITopic[];
   created_at: number;
   updated_at: number;
 }
 
 export interface IComment {
-  id: number | string;
-  author: number | string;
-  post: number | string;
+  id: IDType;
+  author: IDType;
+  post: IDType;
   content: string;
   likes: number;
   created_at: number;
@@ -36,7 +39,7 @@ export interface IComment {
 }
 
 export interface IUser {
-  id: number | string;
+  id: IDType;
   username: string;
   role: ERole;
   profile_image: string;

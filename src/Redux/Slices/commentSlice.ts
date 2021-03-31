@@ -1,77 +1,146 @@
-import { createAction, createSlice, PayloadAction } from "@reduxjs/toolkit";
-import { AppThunk } from "../store";
-import { IComment } from "../../utils/types";
-import { appendComment } from "./postSlice";
-import { v4 as uuidv4 } from 'uuid';
+import { IComment, IDType } from "../../utils/types";
+import { nanoid } from "nanoid";
+import {
+  createAction,
+  createAsyncThunk,
+  createSlice,
+  PayloadAction,
+} from "@reduxjs/toolkit";
+import { RootState } from "../store";
+import { addCommentToPost } from "./postSlice";
 
-const ACTIONS = {
-	"VOID_ALL": createAction<undefined>('comments/void'),
-	"SET_ALL": createAction<IComment[]>('comments/set'),
-	"ADD": createAction<IComment>('comments/add'),
-	"REMOVE": createAction<number | string>('comments/remove'),
-	"UPDATE": createAction<{ id: number | string, updates: Partial<IComment> }>('comments/update'),
+interface ICommentState {
+  comments: IComment[];
+  loading: boolean;
 }
+const initialState: ICommentState = {
+  comments: [],
+  loading: false,
+};
 
-const initialState: IComment[] = [];
+const updateComment = createAction(
+  "comments/UPDATE_COMMENT",
+  (id: string | number, updates: Partial<IComment>) => ({
+    payload: { id, updates, updated_at: Date.now() },
+  })
+);
+
 const slice = createSlice({
-	name: "comments",
-	initialState,
-	reducers: {
-		ACTIONS["VOID_ALL"]: state => initialState,
-		SET_COMMENT_LIST: (state, action: PayloadAction<IComment[]>) => action.payload,
-		ADD_COMMENT: (state, action: PayloadAction<IComment>) => {
-			state.push(action.payload)
-		},
-		REMOVE_COMMENT: (state, action: PayloadAction<number | string>) => state.filter(c => c.id !== action.payload),
-		UPDATE_COMMENT: (state, action: PayloadAction<{ id: number; updates: Partial<IComment> }>) => {
-			const { id, updates } = action.payload;
-			return state.map(c => {
-				// Not the item we're looking for. Keep moving.
-				if(c.id !== id) return c;
-				else return {
-					...c,
-					...updates,
-				}
-			})
-		}
-	}
+  name: "comments",
+  initialState,
+  reducers: {
+    SET_COMMENTS: (state, action: PayloadAction<IComment[]>) => ({
+      ...state,
+      comments: action.payload,
+    }),
+    ADD_COMMENT: {
+      reducer: (state, action: PayloadAction<IComment>) => {
+        state.comments.push(action.payload);
+      },
+      prepare: (author: IDType, post: IDType, content: string) => ({
+        payload: {
+          id: nanoid(),
+          author,
+          post,
+          content,
+          likes: 0,
+          created_at: Date.now(),
+          updated_at: Date.now(),
+        },
+      }),
+    },
+    REMOVE_COMMENT: (state, action: PayloadAction<number>) => ({
+      ...state,
+      comments: state.comments.filter((c) => c.id !== action.payload),
+    }),
+  },
+  extraReducers: (builder) => {
+    builder.addCase(updateComment, (state, action) => {
+      const { id, updates, updated_at } = action.payload;
+
+      const comment = state.comments.filter((c) => c.id === id)[0];
+      if (!comment) {
+        // Comment does not exist - return state;
+        return state;
+      }
+
+      // Extract the updates allowed to be made.
+      // Content and likes are the only two fields allowed to be updated.
+      // Scrub for those values, don't allow other fields to be updated.
+      let finalUpdates: {
+        content?: string;
+        likes?: number;
+        updated_at: number;
+      } = {
+        updated_at,
+      };
+      if ("content" in updates) finalUpdates["content"] = updates["content"];
+      if ("likes" in updates) finalUpdates["likes"] = updates["likes"];
+
+      return {
+        ...state,
+        comments: [
+          ...state.comments.filter((c) => c.id !== id),
+          {
+            ...comment,
+            ...finalUpdates,
+          },
+        ],
+      };
+    });
+  },
 });
 
-export const generateComments = (): AppThunk => (dispatch, getState) => {
-	const { comments: Comments, users: Users, posts: Posts } = getState();
-	const amount = Math.floor(Math.random() * 75) + 15;
-	let List: IComment[] = [];
+export const { ADD_COMMENT, REMOVE_COMMENT, SET_COMMENTS } = slice.actions;
 
-	const randomAuthor = (): number => {
-		const id = Math.floor(Math.random() * (Users?.length - 1));
-		return id;
-	};
+export const generateComments = createAsyncThunk(
+  "comments/generate",
+  (payload, thunkAPI) => {
+    const dispatch = thunkAPI.dispatch;
+    const {
+      users: { users: Users },
+      posts: { posts: Posts },
+    }: RootState = thunkAPI.getState() as RootState;
 
-	const randomPost = (): number => {
-		const id = Math.floor(Math.random() * (Posts?.length - 1));
-		return id;
-	};
+    // Amount of comments to create.
+    const amount = Math.floor(Math.random() * 200) + 50;
 
-	for (let i = 0; i < amount; i++) {
-		const id = uuidv4();
-		const author = randomAuthor();
-		const post = randomPost();
-		const likes = Math.floor(Math.random() * 1000) + 1;
+    // Final list of comments.
+    let List: IComment[] = [];
 
-		const comment: IComment = {
-			id,
-			author,
-			post,
-			content: "Sed ut perspiciatis unde omnis iste natus error sit voluptatem accusantium doloremque laudantium, totam rem aperiam, eaque ipsa quae ab illo inventore veritatis et quasi architecto beatae vitae dicta sunt explicabo. Nemo enim ipsam voluptatem quia voluptas sit aspernatur aut odit aut fugit, sed quia consequuntur magni dolores eos qui ratione voluptatem sequi nesciunt. Neque porro quisquam est, qui dolorem ipsum quia dolor sit amet, consectetur, adipisci velit, sed quia non numquam eius modi tempora incidunt ut labore et dolore magnam.",
-			likes,
-			created_at: Date.now(),
-			updated_at: Date.now()
-		};
+    const randomAuthor = (): IDType => {
+      const id = Math.floor(Math.random() * (Users?.length - 1));
+      return Users[id].id;
+    };
 
-		dispatch(appendComment(post, id));
-		List.push(comment);
-	}
-	return dispatch(SET_COMMENTS(List));
-};
+    const randomPost = (): IDType => {
+      const id = Math.floor(Math.random() * (Posts?.length - 1));
+      return Posts[id].id;
+    };
+
+    for (let i = 0; i < amount; i++) {
+      const id = nanoid();
+      const author = randomAuthor();
+      const post = randomPost();
+      const likes = Math.floor(Math.random() * 1000) + 1;
+
+      const comment: IComment = {
+        id,
+        author,
+        post,
+        content:
+          "Sed ut perspiciatis unde omnis iste natus error sit voluptatem accusantium doloremque laudantium, totam rem aperiam, eaque ipsa quae ab illo inventore veritatis et quasi architecto beatae vitae dicta sunt explicabo. Nemo enim ipsam voluptatem quia voluptas sit aspernatur aut odit aut fugit, sed quia consequuntur magni dolores eos qui ratione voluptatem sequi nesciunt. Neque porro quisquam est, qui dolorem ipsum quia dolor sit amet, consectetur, adipisci velit, sed quia non numquam eius modi tempora incidunt ut labore et dolore magnam.",
+        likes,
+        created_at: Date.now(),
+        updated_at: Date.now(),
+      };
+
+      dispatch(addCommentToPost(post, id));
+      List.push(comment);
+    }
+    dispatch(SET_COMMENTS(List));
+    return List;
+  }
+);
 
 export default slice.reducer;
