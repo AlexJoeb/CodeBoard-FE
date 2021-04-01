@@ -10,6 +10,7 @@ const Comment = ({ comment }: ICommentProps) => {
   const {
     users: { users: Users },
   } = useAppSelector((state) => state);
+  // React.useEffect(() => console.log({ comment }), [comment]);
   const author = Users.filter((user) => user.id === comment.author)[0];
   return (
     <div className="w-full grid grid-cols-comment grid-rows-1 gap-2 mb-4">

@@ -1,40 +1,43 @@
 import React, { FC, ReactElement } from "react";
 
 import Board from "../Components/Board/Board";
+import Pagination from "../Components/Board/Pagination";
 import Stats from "../Components/Stats";
 import Topics from "../Components/Topics";
 import { useAppSelector } from "../Redux/hooks";
+import { RootState } from "../Redux/store";
 import { IPost, ITopic } from "../utils/types";
 
 const Home: FC = (): ReactElement => {
   const {
     posts: { posts: Posts },
-  } = useAppSelector((state) => state);
+  } = useAppSelector((state: RootState) => state);
 
-  // const [topicFilter, setTopicFilter] = React.useState<ITopic | null>(null);
-  const [topicFilter, setTopicFilter] = React.useState<ITopic | null>({
-    id: 1,
-    title: "JS",
-    bgColor: "bg-yellow-400",
-  });
-  const [displayPosts, setDisplayPosts] = React.useState<IPost[]>(Posts);
+  const [topicFilter, setTopicFilter] = React.useState<ITopic | null>(null);
+  const [postsAfterFilter, setPostsAfterFilter] = React.useState<IPost[]>(
+    Posts
+  );
 
-  React.useEffect(() => setDisplayPosts(Posts), [Posts]);
-  React.useEffect(() => {
-    if (!topicFilter) setDisplayPosts(Posts);
+  // Filter posts based on topicFilter;
+  const filterPosts = () => {
+    if (!topicFilter) setPostsAfterFilter(Posts);
     else
-      setDisplayPosts(
-        Posts.filter((post) =>
-          post.topics.map((topic) => topic.id).includes(topicFilter.id)
+      setPostsAfterFilter(
+        Posts.filter(
+          (post: IPost) =>
+            post.topics.filter((topic) => topic.id === topicFilter.id).length >
+            0
         )
       );
-  }, [topicFilter]);
+  };
+  // -- When Posts or TopicFilter changes, refilter.
+  React.useEffect(() => filterPosts(), [topicFilter, Posts]);
 
   return (
     <div className="w-full">
       <Stats />
       <Topics topicFilter={topicFilter} setTopicFilter={setTopicFilter} />
-      <Board posts={displayPosts} />
+      <Board posts={postsAfterFilter} />
     </div>
   );
 };
