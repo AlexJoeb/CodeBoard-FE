@@ -1,4 +1,3 @@
-import { nanoid } from "nanoid";
 import React, { useState } from "react";
 import { ReactComponent as SendIcon } from "../../assets/send.svg";
 import { useAppSelector } from "../../Redux/hooks";

@@ -1,6 +1,4 @@
 import React, { ReactElement } from "react";
-import { updatePost } from "../../Redux/Slices/postSlice";
-
 interface Props {
   page: number;
   setPage: React.Dispatch<React.SetStateAction<number>>;
@@ -30,7 +28,6 @@ export default function Pagination({
       page % maxToShow === 0 ? page - maxToShow : PageIndex * maxToShow;
     const endingIndex =
       page % maxToShow === 0 ? page : (PageIndex + 1) * maxToShow;
-    console.log({ startingIndex, endingIndex });
     return pages.slice(startingIndex, endingIndex);
   };
 
@@ -60,8 +57,9 @@ export default function Pagination({
             </svg>
           </li>
           {pages.length &&
-            getShowingPageNumbers(pages).map((pageNumber) => (
+            getShowingPageNumbers(pages).map((pageNumber, i) => (
               <li
+                key={i}
                 onClick={() => setPage(pageNumber)}
                 className={`cursor-pointer select-none p-3 px-4 border-t border-b text-gray-600 ${
                   pageNumber === page ? "font-medium bg-gray-100" : ""

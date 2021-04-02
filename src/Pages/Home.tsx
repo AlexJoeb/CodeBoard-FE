@@ -1,7 +1,6 @@
 import React, { FC, ReactElement } from "react";
 
 import Board from "../Components/Board/Board";
-import Pagination from "../Components/Board/Pagination";
 import Stats from "../Components/Stats";
 import Topics from "../Components/Topics";
 import { useAppSelector } from "../Redux/hooks";
@@ -19,7 +18,7 @@ const Home: FC = (): ReactElement => {
   );
 
   // Filter posts based on topicFilter;
-  const filterPosts = () => {
+  const filterPosts = React.useCallback(() => {
     if (!topicFilter) setPostsAfterFilter(Posts);
     else
       setPostsAfterFilter(
@@ -29,15 +28,15 @@ const Home: FC = (): ReactElement => {
             0
         )
       );
-  };
+  }, [topicFilter, Posts]);
   // -- When Posts or TopicFilter changes, refilter.
-  React.useEffect(() => filterPosts(), [topicFilter, Posts]);
+  React.useEffect(() => filterPosts(), [topicFilter, Posts, filterPosts]);
 
   return (
     <div className="w-full">
       <Stats />
       <Topics topicFilter={topicFilter} setTopicFilter={setTopicFilter} />
-      <Board posts={postsAfterFilter} />
+      <Board posts={postsAfterFilter} topicFilter={topicFilter} />
     </div>
   );
 };

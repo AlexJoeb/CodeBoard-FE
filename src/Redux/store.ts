@@ -1,5 +1,5 @@
 import { configureStore, ThunkAction, Action } from "@reduxjs/toolkit";
-import logger from "redux-logger";
+// import logger from "redux-logger";
 import authReducer from "./Slices/authSlice";
 import usersReducer from "./Slices/usersSlice";
 import postReducer from "./Slices/postSlice";
