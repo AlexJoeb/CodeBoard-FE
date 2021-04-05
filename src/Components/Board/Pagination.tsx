@@ -35,6 +35,7 @@ export default function Pagination({
     generatePages(numberOfPages);
   }, [numberOfPages]);
 
+  if (!pages || !pages.length) return <div></div>;
   return (
     <div className="w-full mt-4">
       <div className="max-w-2xl mx-auto">
