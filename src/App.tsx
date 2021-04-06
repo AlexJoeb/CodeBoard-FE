@@ -6,6 +6,7 @@ import { useDispatch } from "react-redux";
 import { generateUsers } from "./Redux/Slices/usersSlice";
 import { generatePosts } from "./Redux/Slices/postSlice";
 import { generateComments } from "./Redux/Slices/commentSlice";
+import Login from "./Pages/Login";
 
 const App: FC = () => {
   const dispatch = useDispatch();
@@ -23,6 +24,7 @@ const App: FC = () => {
         <Header />
         <Switch>
           <Route exact path="/" component={Home} />
+          <Route exact path="/login" component={Login} />
         </Switch>
       </div>
     </Router>
