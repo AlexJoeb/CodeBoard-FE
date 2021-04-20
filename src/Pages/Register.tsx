@@ -1,19 +1,29 @@
 import React, { FC, ReactElement } from "react";
 import { Formik, FormikHelpers, Form, Field } from "formik";
 import * as Yup from "yup";
+
 interface FormValues {
   username: string;
   password: string;
   rememberUser?: boolean;
 }
 
-const LoginSchema = Yup.object().shape({
-  username: Yup.string().required("Please enter a username."),
-  password: Yup.string().required("Please enter a password."),
+const RegisterSchema = Yup.object().shape({
+  username: Yup.string()
+    .min(3, "Username has minimum of 3 characters.")
+    .max(32, "Username has maximum of 32 characters.")
+    .required("Please enter a username."),
+  password: Yup.string()
+    .min(8, "Password must be between 8 and 32 characters long.")
+    .max(32, "Password must be between 8 and 32 characters long.")
+    .matches(
+      /^(?=.*?[A-Z])(?=.*?[a-z])(?=.*?[0-9])(?=.*?[#?!@$%^&*-]).{8,32}$/,
+      "Passwords must contain at least one digit, at least one lower case character, at least one uppercase character, & at least one special character."
+    )
+    .required("Please enter a password."),
 });
 
-const Login: FC = (): ReactElement => {
-  const [rememberUser, setRememberUser] = React.useState<boolean>(false);
+const Register: FC = (): ReactElement => {
   const [showPassword, setShowPassword] = React.useState<boolean>(false);
 
   const initialValues: FormValues = {
@@ -26,16 +36,15 @@ const Login: FC = (): ReactElement => {
       <div className="max-w-md w-full space-y-8">
         <div>
           <h2 className="mt-6 text-center text-3xl font-extrabold text-gray-900">
-            Sign in to your account
+            Register your account
           </h2>
         </div>
         <Formik
           initialValues={initialValues}
-          validationSchema={LoginSchema}
+          validationSchema={RegisterSchema}
           validateOnChange={false}
           validateOnBlur={false}
           onSubmit={(values, { setSubmitting }: FormikHelpers<FormValues>) => {
-            values = { ...values, rememberUser };
             console.log(values);
           }}
         >
@@ -84,22 +93,6 @@ const Login: FC = (): ReactElement => {
               </div>
               <div className="mt-4 flex flex-col">
                 <div className="flex justify-start">
-                  <div className="flex items-center mr-4">
-                    <input
-                      id="remember_me"
-                      name="remember_me"
-                      type="checkbox"
-                      checked={rememberUser}
-                      onChange={() => setRememberUser(!rememberUser)}
-                      className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded cursor-pointer"
-                    />
-                    <label
-                      htmlFor="remember_me"
-                      className="ml-2 block text-sm text-gray-900"
-                    >
-                      Remember me
-                    </label>
-                  </div>
                   <div className="flex items-center">
                     <input
                       id="show_password"
@@ -118,20 +111,12 @@ const Login: FC = (): ReactElement => {
                   </div>
                 </div>
                 <div className="flex my-4 justify-start">
-                  <div className="text-sm mr-4">
-                    <a
-                      href="/forgot"
-                      className="font-medium text-blue-700 hover:text-blue-800 select-none"
-                    >
-                      Forgot your password?
-                    </a>
-                  </div>
                   <div className="text-sm">
                     <a
-                      href="/register"
+                      href="/login"
                       className="font-medium text-blue-700 hover:text-blue-800 select-none hover:bottom-b-2 hover:border-red-400"
                     >
-                      I need an account.
+                      I have an account.
                     </a>
                   </div>
                 </div>
@@ -142,7 +127,7 @@ const Login: FC = (): ReactElement => {
                   type="submit"
                   className="group relative w-full flex justify-center py-2 px-4 border border-transparent text-sm font-medium rounded-md text-white bg-blue-700 hover:bg-blue-800 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-colors"
                 >
-                  Sign in
+                  Register
                 </button>
               </div>
             </Form>
@@ -153,4 +138,4 @@ const Login: FC = (): ReactElement => {
   );
 };
 
-export default Login;
+export default Register;

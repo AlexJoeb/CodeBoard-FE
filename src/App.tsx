@@ -7,6 +7,7 @@ import { generateUsers } from "./Redux/Slices/usersSlice";
 import { generatePosts } from "./Redux/Slices/postSlice";
 import { generateComments } from "./Redux/Slices/commentSlice";
 import Login from "./Pages/Login";
+import Register from "./Pages/Register";
 
 const App: FC = () => {
   const dispatch = useDispatch();
@@ -25,6 +26,7 @@ const App: FC = () => {
         <Switch>
           <Route exact path="/" component={Home} />
           <Route exact path="/login" component={Login} />
+          <Route exact path="/register" component={Register} />
         </Switch>
       </div>
     </Router>
